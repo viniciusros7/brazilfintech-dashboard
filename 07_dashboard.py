@@ -22,6 +22,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# dashboard is currently English-only; future versions may reintroduce language
+lang = 'EN'  # placeholder to satisfy conditionals
+
 # =============================================================
 # STRINGS — English only (no translation overhead)
 # =============================================================
@@ -361,8 +364,9 @@ st.markdown(f"""
 st.markdown(f"### {LIVE_PULSE}")
 lc = st.columns(8)
 
-selic_label = f"Selic — Brazil Base Rate" if lang == 'EN' else "Selic — Taxa Base BCB"
-selic_sublabel = f"High Selic = tighter credit" if lang == 'EN' else "Selic alta = crédito restrito"
+# language hard‑coded to English for v7
+selic_label = "Selic — Brazil Base Rate"
+selic_sublabel = "High Selic = tighter credit"
 
 cards = [
     (f"R$ {usd_brl:.2f}", "USD / BRL",
