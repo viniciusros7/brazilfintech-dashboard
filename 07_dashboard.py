@@ -5,6 +5,7 @@
 # =============================================================
 
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 import plotly.express as px
@@ -175,7 +176,7 @@ st.markdown(f"""
 # JAVASCRIPT LIVE CLOCK — no Streamlit reruns, just JS ticking
 # =============================================================
 
-st.markdown("""
+components.html("""
 <div id="live-clock" style="
     position: fixed; top: 12px; right: 220px;
     background: rgba(13,31,45,0.92);
@@ -206,7 +207,7 @@ st.markdown("""
     setInterval(updateClock, 1000);
 })();
 </script>
-""", unsafe_allow_html=True)
+""", height=0)
 
 DATA_PATH = "data/"
 
