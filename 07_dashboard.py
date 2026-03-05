@@ -15,6 +15,13 @@ import requests
 from datetime import datetime
 warnings.filterwarnings('ignore')
 
+# cache a clock value so that it only refreshes at most once per minute,
+# avoiding a full script rerun every second. ttl=60 keeps the timestamp live
+# enough for a dashboard while preserving performance.
+@st.cache_data(ttl=60)
+def current_time():
+    return datetime.now()
+
 st.set_page_config(
     page_title="Brazil Fintech Disruption — Executive Brief",
     page_icon="🇧🇷",
@@ -337,7 +344,7 @@ selic = get_selic()
 usd_brl, usd_change = get_usd_brl()
 nu_price, nu_change = get_nu_stock()
 news = get_fintech_news()
-now = datetime.now()
+now = current_time()
 
 # =============================================================
 # HEADER — Executive Framing
