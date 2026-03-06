@@ -1,6 +1,6 @@
 # =============================================================
 # BrazilFintech — Fintech vs Traditional Banks
-# Dashboard v7 — EN only, faster, Brazilian benchmarks | UCLan MSc
+# Dashboard v8 — Refresh button, stock chart, tooltip fix | UCLan MSc
 # "You are losing market — here is why and how to recover"
 # =============================================================
 
@@ -13,15 +13,15 @@ import plotly.graph_objects as go
 import pickle
 import warnings
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
+import pytz
 warnings.filterwarnings('ignore')
 
-# cache a clock value so that it only refreshes at most once per minute,
-# avoiding a full script rerun every second. ttl=60 keeps the timestamp live
-# enough for a dashboard while preserving performance.
-@st.cache_data(ttl=60)
-def current_time():
-    return datetime.now()
+BRT = pytz.timezone('America/Sao_Paulo')
+
+def get_now_brt():
+    return datetime.now(timezone.utc).astimezone(BRT)
+
 
 st.set_page_config(
     page_title="Brazil Fintech Disruption — Executive Brief",
@@ -176,38 +176,7 @@ st.markdown(f"""
 # JAVASCRIPT LIVE CLOCK — no Streamlit reruns, just JS ticking
 # =============================================================
 
-components.html("""
-<div id="live-clock" style="
-    position: fixed; top: 12px; right: 220px;
-    background: rgba(13,31,45,0.92);
-    border: 1px solid #2E86AB;
-    border-radius: 8px;
-    padding: 0.3rem 0.9rem;
-    font-family: monospace;
-    font-size: 0.82rem;
-    color: #4ECDC4;
-    z-index: 9999;
-    letter-spacing: 0.05em;
-">⏱ --:--:--</div>
 
-<script>
-(function() {
-    function updateClock() {
-        var el = document.getElementById('live-clock');
-        if (el) {
-            var now = new Date();
-            var h = String(now.getHours()).padStart(2, '0');
-            var m = String(now.getMinutes()).padStart(2, '0');
-            var s = String(now.getSeconds()).padStart(2, '0');
-            var day = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
-            el.innerHTML = '⏱ ' + h + ':' + m + ':' + s + ' &nbsp;|&nbsp; ' + day;
-        }
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
-})();
-</script>
-""", height=0)
 
 DATA_PATH = "data/"
 
@@ -246,6 +215,37 @@ def get_nu_stock():
         return round(cur, 2), round(((cur - prv) / prv) * 100, 2)
     except:
         return 11.42, 1.2
+
+@st.cache_data(ttl=3600)
+def get_bank_stocks_history():
+    """Fetch stock price history 2018-now for all listed banks (normalised to 100)."""
+    import yfinance as yf
+    tickers = {
+        # Fintechs
+        'Nubank (NU)':    'NU',
+        'PagSeguro':      'PAGS',
+        'StoneCo':        'STNE',
+        # Traditional banks (Brazilian ADRs / BDRs)
+        'Itaú':           'ITUB',
+        'Bradesco':       'BBD',
+        'Banco do Brasil': 'BBAS3.SA',
+        'Santander BR':   'BSBR',
+    }
+    fintech_names = {'Nubank (NU)', 'PagSeguro', 'StoneCo'}
+    frames = []
+    for name, ticker in tickers.items():
+        try:
+            df = yf.Ticker(ticker).history(start='2018-01-01')['Close'].reset_index()
+            df.columns = ['Date', 'Close']
+            df['Date'] = pd.to_datetime(df['Date']).dt.tz_localize(None)
+            base = df['Close'].iloc[0]
+            df['Indexed'] = (df['Close'] / base) * 100
+            df['Name'] = name
+            df['Type'] = 'Fintech' if name in fintech_names else 'Traditional Bank'
+            frames.append(df)
+        except:
+            pass
+    return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 @st.cache_data(ttl=300)
 def get_fintech_news():
@@ -345,7 +345,7 @@ selic = get_selic()
 usd_brl, usd_change = get_usd_brl()
 nu_price, nu_change = get_nu_stock()
 news = get_fintech_news()
-now = current_time()
+now = get_now_brt()
 
 # =============================================================
 # HEADER — Executive Framing
@@ -357,13 +357,20 @@ st.markdown(f"""
 <div style="display:inline-block;background:rgba(27,79,114,0.35);border:1px solid {PALETTE['accent']};
             border-radius:6px;padding:0.25rem 0.8rem;margin-top:0.2rem">
     <span style="color:{PALETTE['fintech']};font-size:0.88rem;font-weight:600">
-    🕐 {LAST_UPDATE}: {now.strftime('%d %b %Y · %H:%M:%S')}
+    🕐 {LAST_UPDATE}: {now.strftime('%d %b %Y · %H:%M:%S')} (BRT)
     </span>
     <span style="color:{PALETTE['muted']};font-size:0.78rem">
     &nbsp;·&nbsp; BCB · IMF · Nubank Earnings · Kaggle
     </span>
 </div>
 """, unsafe_allow_html=True)
+
+# Refresh button — updates USD/BRL and NU stock on demand
+_hdr_col1, _hdr_col2 = st.columns([6, 1])
+with _hdr_col2:
+    if st.button("🔄 Refresh prices", key="refresh_top", help="Fetch latest USD/BRL and Nubank stock"):
+        st.cache_data.clear()
+        st.rerun()
 
 # =============================================================
 # LIVE PULSE CARDS
@@ -600,7 +607,7 @@ with tab1:
             fig_tot.add_annotation(
                 x=total_ft['Date'].iloc[-1], y=ft_cust_end,
                 text=f"<b>+{ft_cust_end - ft_cust_start:.0f}M</b><br>Fintechs Q4 2025",
-                showarrow=True, arrowhead=2,
+                showarrow=True, arrowhead=2, ax=-60, ay=60,
                 font=dict(color=PALETTE['fintech'], size=12),
                 arrowcolor=PALETTE['fintech'],
                 bgcolor="rgba(13,31,45,0.85)", bordercolor=PALETTE['fintech']
@@ -620,7 +627,7 @@ with tab1:
         fig_tot.update_layout(
             title='<b>Customer Base: Fintechs vs Traditional Banks (Millions)</b>',
             plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-            font_color='white', font_size=12, hovermode='x unified',
+            font_color='white', font_size=12, hovermode='x',
             yaxis_title='Customers (Millions)'
         )
         st.plotly_chart(fig_tot, use_container_width=True)
@@ -641,6 +648,75 @@ with tab1:
     the point where traditional banks permanently lose credit pricing power in the Brazilian market.
     </div>
     """, unsafe_allow_html=True)
+
+    # ----------------------------------------------------------
+    # STOCK PRICE CHART — All listed banks 2018–now (indexed)
+    # ----------------------------------------------------------
+    st.markdown("---")
+    st.markdown("#### 📈 Stock Performance: Fintechs vs Traditional Banks (2018 = 100)")
+    st.markdown(
+        "<span style='color:#aaa;font-size:0.82rem'>Indexed to 100 at Jan 2018 · Real data via NYSE/yfinance</span>",
+        unsafe_allow_html=True
+    )
+
+    with st.spinner("Loading stock data…"):
+        stocks_df = get_bank_stocks_history()
+
+    if not stocks_df.empty:
+        color_map = {
+            'Nubank (NU)':     PALETTE['fintech'],
+            'PagSeguro':       '#00CED1',
+            'StoneCo':         '#20B2AA',
+            'Itaú':            PALETTE['trad'],
+            'Bradesco':        '#E74C3C',
+            'Banco do Brasil': '#F39C12',
+            'Santander BR':    '#C0392B',
+        }
+        fig_stocks = go.Figure()
+        for name, grp in stocks_df.groupby('Name'):
+            is_fintech = grp['Type'].iloc[0] == 'Fintech'
+            fig_stocks.add_trace(go.Scatter(
+                x=grp['Date'], y=grp['Indexed'],
+                name=name,
+                mode='lines',
+                line=dict(
+                    color=color_map.get(name, '#888'),
+                    width=3 if is_fintech else 1.5,
+                    dash='solid' if is_fintech else 'dot'
+                ),
+                hovertemplate=f"<b>{name}</b><br>Date: %{{x|%b %Y}}<br>Indexed: %{{y:.0f}}<extra></extra>"
+            ))
+
+        # Reference line at 100
+        fig_stocks.add_hline(y=100, line_dash="dash", line_color="rgba(255,255,255,0.2)",
+                              annotation_text="Jan 2018 baseline", annotation_position="bottom right")
+
+        # COVID highlight
+        fig_stocks.add_vrect(
+            x0="2020-01-01", x1="2021-07-01",
+            fillcolor="rgba(243,156,18,0.08)", line_width=0,
+            annotation_text="🦠 COVID-19<br>Acceleration",
+            annotation_position="top left",
+            annotation_font_color=PALETTE['warning'],
+            annotation_font_size=10
+        )
+
+        fig_stocks.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            font_color='white', font_size=12,
+            hovermode='x',
+            xaxis_title='Date', yaxis_title='Indexed Price (Jan 2018 = 100)',
+            legend=dict(orientation='v', x=1.01, y=1),
+            margin=dict(r=160)
+        )
+        st.plotly_chart(fig_stocks, use_container_width=True)
+        st.markdown(
+            "<span style='font-size:0.78rem;color:#aaa'>Solid lines = Fintechs · Dotted lines = Traditional Banks · "
+            "NU listed Dec 2021 (indexed from first trading day)</span>",
+            unsafe_allow_html=True
+        )
+    else:
+        st.warning("Stock data unavailable — check internet connection or yfinance.")
 
 # ============================================================
 # TAB 2 — AI CREDIT ENGINE
