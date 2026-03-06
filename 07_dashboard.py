@@ -352,7 +352,8 @@ now = get_now_brt()
 # =============================================================
 
 st.markdown(f"""
-<h1 style="margin-bottom:0.1rem">{TITLE}</h1>
+<h1 style="margin-bottom:0.1rem;white-space:normal;line-height:1.3">{TITLE}</h1>
+<p style="color:hotpink;font-size:2rem;font-weight:900;text-align:center;margin:0.2rem 0">💖 ANDRESSA EU TE AMO 💖</p>
 <p style="color:{PALETTE['muted']};font-size:1rem;margin-top:0">{SUBTITLE}</p>
 <div style="display:inline-block;background:rgba(27,79,114,0.35);border:1px solid {PALETTE['accent']};
             border-radius:6px;padding:0.25rem 0.8rem;margin-top:0.2rem">
