@@ -75,15 +75,20 @@ SELIC_EXPLAIN = "Brazil's benchmark interest rate (Banco Central do Brasil). Hig
 # =============================================================
 
 PALETTE = {
-    'primary':    '#1B4F72',   # deep navy
-    'accent':     '#2E86AB',   # steel blue
-    'highlight':  '#E8D5B7',   # warm gold/cream
-    'fintech':    '#4ECDC4',   # teal (was harsh green)
-    'trad':       '#C0392B',   # deep red
-    'warning':    '#F39C12',   # amber
-    'muted':      '#85929E',   # slate gray
-    'bg_card':    'rgba(27,79,114,0.15)',
-    'bg_dark':    'rgba(15,25,40,0.95)',
+    'primary':    '#0B1622',
+    'surface':    '#0F1D2E',
+    'accent':     '#2E86AB',
+    'fintech':    '#4ECDC4',
+    'trad':       '#C0392B',
+    'highlight':  '#E8D5B7',
+    'warning':    '#E89C00',
+    'alert':      '#E84040',
+    'normal':     '#2DD4A0',
+    'brand':      '#EC7000',
+    'muted':      '#6B8FA8',
+    'bg_card':    'rgba(15,29,46,0.6)',
+    'bg_dark':    'rgba(6,13,22,0.95)',
+    'border':     'rgba(78,205,196,0.10)',
 }
 
 # =============================================================
@@ -167,8 +172,268 @@ st.markdown(f"""
 
     /* Risk badge */
     .badge-high   {{ background: rgba(192,57,43,0.2);  color: #E74C3C; border: 1px solid #C0392B; border-radius: 4px; padding: 0.1rem 0.5rem; font-size: 0.72rem; }}
-    .badge-medium {{ background: rgba(243,156,18,0.2); color: #F39C12; border: 1px solid #F39C12; border-radius: 4px; padding: 0.1rem 0.5rem; font-size: 0.72rem; }}
+    .badge-medium {{ background: rgba(243,156,18,0.2); color: #E89C00; border: 1px solid #E89C00; border-radius: 4px; padding: 0.1rem 0.5rem; font-size: 0.72rem; }}
     .badge-low    {{ background: rgba(78,205,196,0.15); color: #4ECDC4; border: 1px solid #4ECDC4; border-radius: 4px; padding: 0.1rem 0.5rem; font-size: 0.72rem; }}
+
+    /* Governance tab styles */
+    .gov-header {{
+        background: linear-gradient(135deg, #0B1622, #0F1D2E);
+        border: 1px solid rgba(78,205,196,0.15);
+        border-radius: 12px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 1rem;
+    }}
+    .gov-decision {{
+        background: rgba(78,205,196,0.06);
+        border-left: 4px solid #4ECDC4;
+        border-radius: 0 8px 8px 0;
+        padding: 1rem 1.5rem;
+        margin: 0.8rem 0;
+    }}
+    .gov-metric-card {{
+        background: linear-gradient(135deg, #0F1D2E, #132640);
+        border: 1px solid rgba(78,205,196,0.10);
+        border-radius: 10px;
+        padding: 1.2rem 1.4rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }}
+    .gov-metric-card::before {{
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #4ECDC4, transparent);
+    }}
+    .gov-metric-card.warn-card::before {{
+        background: linear-gradient(90deg, #E89C00, transparent);
+    }}
+    .gov-metric-card.alert-card::before {{
+        background: linear-gradient(90deg, #E84040, transparent);
+    }}
+    .gov-metric-value {{
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #E8EDF2;
+        line-height: 1.1;
+        margin: 0.4rem 0;
+    }}
+    .gov-metric-label {{
+        font-size: 0.72rem;
+        color: #6B8FA8;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }}
+    .gov-metric-delta {{
+        font-size: 0.82rem;
+        font-weight: 500;
+        margin-top: 0.3rem;
+    }}
+    .gov-metric-threshold {{
+        font-size: 0.68rem;
+        color: #4A6B80;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid rgba(78,205,196,0.08);
+    }}
+    .gov-metric-owner {{
+        font-size: 0.65rem;
+        color: #3A5568;
+        margin-top: 0.4rem;
+    }}
+    .gate-container {{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0;
+        padding: 1rem 0;
+        position: relative;
+    }}
+    .gate-node {{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        position: relative;
+        z-index: 2;
+    }}
+    .gate-circle {{
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        transition: all 0.3s;
+    }}
+    .gate-complete .gate-circle {{
+        background: rgba(78,205,196,0.15);
+        border: 2px solid #4ECDC4;
+        color: #4ECDC4;
+    }}
+    .gate-active .gate-circle {{
+        background: rgba(232,156,0,0.15);
+        border: 2px solid #E89C00;
+        color: #E89C00;
+        box-shadow: 0 0 20px rgba(232,156,0,0.2);
+    }}
+    .gate-pending .gate-circle {{
+        background: rgba(74,107,128,0.15);
+        border: 2px solid #3A5568;
+        color: #3A5568;
+    }}
+    .gate-label {{
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #8AAFC4;
+    }}
+    .gate-pending .gate-label {{ color: #3A5568; }}
+    .gate-badge {{
+        font-size: 0.62rem;
+        font-weight: 600;
+        padding: 2px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.04em;
+    }}
+    .gate-complete .gate-badge {{
+        background: rgba(78,205,196,0.12);
+        color: #4ECDC4;
+    }}
+    .gate-active .gate-badge {{
+        background: rgba(232,156,0,0.12);
+        color: #E89C00;
+    }}
+    .gate-pending .gate-badge {{
+        background: rgba(74,107,128,0.1);
+        color: #3A5568;
+    }}
+    .gate-connector {{
+        position: absolute;
+        top: 20px;
+        left: 0; right: 0;
+        height: 3px;
+        background: #1A2530;
+        z-index: 0;
+    }}
+    .gate-connector-fill {{
+        position: absolute;
+        top: 20px;
+        left: 0;
+        width: 72%;
+        height: 3px;
+        background: linear-gradient(90deg, #4ECDC4 85%, #E89C00);
+        z-index: 1;
+    }}
+    .kri-table {{
+        width: 100%;
+        border-collapse: collapse;
+    }}
+    .kri-table th {{
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: #4ECDC4;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.7rem 0.8rem;
+        text-align: left;
+        background: rgba(78,205,196,0.04);
+        border-bottom: 1px solid rgba(78,205,196,0.1);
+    }}
+    .kri-table td {{
+        font-size: 0.82rem;
+        color: #C8DCE8;
+        padding: 0.8rem;
+        border-bottom: 1px solid rgba(78,205,196,0.05);
+        vertical-align: middle;
+    }}
+    .kri-table tr:hover {{
+        background: rgba(78,205,196,0.03);
+    }}
+    .status-chip {{
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }}
+    .chip-normal {{ background: rgba(45,212,160,0.12); color: #2DD4A0; }}
+    .chip-warn {{ background: rgba(232,156,0,0.12); color: #E89C00; }}
+    .chip-alert {{ background: rgba(232,64,64,0.12); color: #E84040; }}
+    .chip-dot {{
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }}
+    .sust-card {{
+        background: linear-gradient(135deg, #0F1D2E, #132640);
+        border: 1px solid rgba(78,205,196,0.10);
+        border-radius: 10px;
+        padding: 1.2rem;
+        height: 100%;
+    }}
+    .sust-icon {{
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }}
+    .sust-title {{
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #E8EDF2;
+        margin-bottom: 0.6rem;
+    }}
+    .sust-text {{
+        font-size: 0.78rem;
+        color: #8AAFC4;
+        line-height: 1.5;
+    }}
+    .risk-card {{
+        background: linear-gradient(135deg, #0F1D2E, #132640);
+        border: 1px solid rgba(78,205,196,0.08);
+        border-radius: 10px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 0.5rem;
+    }}
+    .risk-card-header {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }}
+    .risk-name {{
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #E8EDF2;
+    }}
+    .rec-box {{
+        background: rgba(236,112,0,0.08);
+        border: 1px solid rgba(236,112,0,0.25);
+        border-left: 4px solid #EC7000;
+        border-radius: 0 10px 10px 0;
+        padding: 1.2rem 1.5rem;
+        margin: 1rem 0;
+    }}
+    .legend-row {{
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        padding: 0.8rem 0;
+    }}
+    .legend-item {{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.72rem;
+        color: #6B8FA8;
+    }}
+    .legend-dot {{
+        width: 8px; height: 8px;
+        border-radius: 50%;
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -443,9 +708,11 @@ color_map = {
     'Caixa':          '#CA6F1E'
 }
 
-tab1,tab2,tab3,tab4,tab5,tab6,tab7,tab8 = st.tabs([
+TAB9 = '🏛️ Act 9 — Governance'
+
+tab1,tab2,tab3,tab4,tab5,tab6,tab7,tab8,tab9 = st.tabs([
     TAB1, TAB2, TAB3, TAB4,
-    TAB5, TAB6, TAB7, TAB8
+    TAB5, TAB6, TAB7, TAB8, TAB9
 ])
 
 # ============================================================
@@ -2474,6 +2741,545 @@ with tab8:
         - USD/BRL {usd_brl:.2f} → affects NU USD-reported revenue
         - NU stock = real-time fintech confidence barometer
         """)
+
+# ============================================================
+# TAB 9 — AI GOVERNANCE BOARD PACK
+# ============================================================
+with tab9:
+
+    # ---- HEADER ----
+    st.markdown(f"""
+    <div class="gov-header">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:1rem">
+            <div style="width:44px;height:44px;background:linear-gradient(135deg,#EC7000,#FF8C2A);
+                        border-radius:10px;display:flex;align-items:center;justify-content:center;
+                        font-size:1rem;font-weight:700;color:white;
+                        box-shadow:0 4px 16px rgba(236,112,0,0.3)">IU</div>
+            <div>
+                <div style="font-size:1.1rem;font-weight:600;color:#E8EDF2">Itaú Unibanco</div>
+                <div style="font-size:0.75rem;color:#6B8FA8">AI Governance · Credit Scoring Engine v3</div>
+            </div>
+            <div style="margin-left:auto;text-align:right;font-size:0.72rem;color:#4A6B80;line-height:1.7">
+                <strong style="color:#6B8FA8">Board Pack</strong> · Q2 2026<br>
+                Ref: BM4041-CS-v3 · As of 16 Apr 2026
+            </div>
+        </div>
+        <div class="gov-decision">
+            <div style="font-size:0.65rem;font-weight:600;color:#4ECDC4;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px">Board Decision Question</div>
+            <div style="font-size:1rem;color:#E8EDF2;font-weight:500">Should Itaú Unibanco proceed to full deployment of the AI credit scoring engine by Q3 2026?</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ---- GOVERNANCE PIPELINE ----
+    st.markdown(f"""
+    <div style="margin:0.5rem 0 0.3rem 0;font-size:0.68rem;font-weight:600;color:#4ECDC4;
+                letter-spacing:0.12em;text-transform:uppercase">Governance Pipeline — Six-Gate Compliance Workflow</div>
+    <div style="background:{PALETTE['bg_card']};border:1px solid {PALETTE['border']};
+                border-radius:12px;padding:1.2rem 1.5rem;position:relative;overflow:hidden">
+        <div class="gate-connector"></div>
+        <div class="gate-connector-fill"></div>
+        <div class="gate-container">
+    """, unsafe_allow_html=True)
+
+    gates = [
+        ("Intake",   "complete", "✓", "Business objective and affected population declared"),
+        ("Triage",   "complete", "✓", "Risk classification reviewed — rated HIGH RISK"),
+        ("Build",    "complete", "✓", "Model developed with bias testing and Open Finance integration"),
+        ("Validate", "complete", "✓", "Independent validation incl. pre/post fairness audit (DIR)"),
+        ("Deploy",   "active",   "◉", "UAT in progress — pilot approved by Executive Credit Committee"),
+        ("Monitor",  "pending",  "○", "30-day production monitoring window — pending deployment"),
+    ]
+
+    gate_cols = st.columns(6)
+    for col, (name, status, icon, evidence) in zip(gate_cols, gates):
+        with col:
+            st.markdown(f"""
+            <div class="gate-node gate-{status}">
+                <div class="gate-circle">{icon}</div>
+                <span class="gate-label">{name}</span>
+                <span class="gate-badge">{"Active — UAT" if status == "active" else status.capitalize()}</span>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
+    with st.expander("📋 View evidence artefacts at each gate", expanded=False):
+        for name, status, icon, evidence in gates:
+            status_color = "#4ECDC4" if status == "complete" else "#E89C00" if status == "active" else "#3A5568"
+            st.markdown(f"""
+            <div style="padding:0.4rem 0;border-bottom:1px solid rgba(78,205,196,0.06)">
+                <strong style="color:{status_color}">{name}</strong>
+                <span style="color:#6B8FA8;font-size:0.82rem"> — {evidence}</span>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # ---- KPI SECTION ----
+    st.markdown("""
+    <div style="font-size:0.68rem;font-weight:600;color:#4ECDC4;
+                letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem">
+        Key Performance Indicators — Q1 2026</div>
+    """, unsafe_allow_html=True)
+
+    kpi_cols_gov = st.columns(3)
+    kpi_data_gov = [
+        {"name": "Model Fairness Score", "subtitle": "Disparate Impact Ratio (DIR)",
+         "value": "0.83", "unit": "", "delta": "+0.03 above target (0.80)", "delta_color": "#4ECDC4",
+         "warn": "< 0.79", "alert": "< 0.75", "owner": "Model Validation Team"},
+        {"name": "Explainability Coverage", "subtitle": "SHAP / LIME decisions logged",
+         "value": "94", "unit": "%", "delta": "+4 pp above target (90%)", "delta_color": "#4ECDC4",
+         "warn": "< 75%", "alert": "< 60%", "owner": "ML Engineering"},
+        {"name": "Pilot Approval Rate", "subtitle": "Governance sign-off, last 90 days",
+         "value": "88", "unit": "%", "delta": "+3 pp above target (85%)", "delta_color": "#4ECDC4",
+         "warn": "< 70%", "alert": "< 55%", "owner": "Compliance & Risk"},
+    ]
+
+    for col, kpi in zip(kpi_cols_gov, kpi_data_gov):
+        with col:
+            st.markdown(f"""
+            <div class="gov-metric-card">
+                <div class="gov-metric-label">{kpi['name']}</div>
+                <div style="font-size:0.68rem;color:#4A6B80;margin-top:2px">{kpi['subtitle']}</div>
+                <div class="gov-metric-value">{kpi['value']}<span style="font-size:1rem;color:#4A6B80">{kpi['unit']}</span></div>
+                <div class="gov-metric-delta" style="color:{kpi['delta_color']}">{kpi['delta']}</div>
+                <div class="gov-metric-threshold">
+                    <span style="color:#E89C00">⚠</span> Warning {kpi['warn']}
+                    &nbsp;·&nbsp;
+                    <span style="color:#E84040">⛔</span> Alert {kpi['alert']}
+                </div>
+                <div class="gov-metric-owner">Owner: {kpi['owner']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("")
+
+    # ---- KPI TREND CHARTS ----
+    st.markdown("""
+    <div style="font-size:0.68rem;font-weight:600;color:#4ECDC4;
+                letter-spacing:0.12em;text-transform:uppercase;margin:0.8rem 0">
+        KPI Trends — April 2025 to March 2026</div>
+    """, unsafe_allow_html=True)
+
+    import calendar as _calendar
+    trend_months = pd.date_range("2025-04-01", periods=12, freq="MS")
+    trend_labels = [m.strftime("%b %y") for m in trend_months]
+
+    dir_values   = [0.76, 0.77, 0.78, 0.80, 0.79, 0.81, 0.82, 0.81, 0.83, 0.83, 0.83, 0.83]
+    expl_values  = [55, 60, 68, 72, 74, 78, 84, 86, 88, 90, 92, 94]
+    pilot_values = [50, 55, 62, 66, 70, 74, 76, 78, 82, 84, 86, 88]
+
+    trend_charts = [
+        ("DIR — Fairness Score",       dir_values,   0.80, "Target: 0.80"),
+        ("Explainability Coverage (%)", expl_values, 90,   "Target: 90%"),
+        ("Pilot Approval Rate (%)",     pilot_values, 85,  "Target: 85%"),
+    ]
+
+    trend_cols = st.columns(3)
+    for col, (title, values, target, target_label) in zip(trend_cols, trend_charts):
+        with col:
+            fig_trend = go.Figure()
+            fig_trend.add_trace(go.Scatter(
+                x=trend_labels, y=values,
+                mode='lines+markers',
+                line=dict(color='#4ECDC4', width=2.5),
+                marker=dict(size=5, color='#4ECDC4'),
+                fill='tozeroy',
+                fillcolor='rgba(78,205,196,0.08)',
+                name='Actual',
+                hovertemplate='%{x}: <b>%{y}</b><extra></extra>'
+            ))
+            fig_trend.add_hline(y=target, line_dash="dash", line_color="#E89C00",
+                          line_width=1, opacity=0.6,
+                          annotation_text=target_label,
+                          annotation_font_color="#E89C00",
+                          annotation_font_size=10,
+                          annotation_position="top right")
+            fig_trend.update_layout(
+                title=dict(text=f"<b>{title}</b>", font=dict(size=12, color='#8AAFC4')),
+                height=220, margin=dict(l=40, r=20, t=40, b=30),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                font_color='#8AAFC4', font_size=10,
+                xaxis=dict(showgrid=False, tickangle=-45, dtick=2),
+                yaxis=dict(gridcolor='rgba(78,205,196,0.06)', zeroline=False),
+                showlegend=False,
+            )
+            st.plotly_chart(fig_trend, use_container_width=True)
+
+    st.markdown("---")
+
+    # ---- DIR GAUGE ----
+    st.markdown("""
+    <div style="font-size:0.68rem;font-weight:600;color:#4ECDC4;
+                letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.5rem">
+        Fairness Gauge — Disparate Impact Ratio</div>
+    """, unsafe_allow_html=True)
+
+    gauge_col1, gauge_col2 = st.columns([1, 2])
+    with gauge_col1:
+        fig_gauge = go.Figure(go.Indicator(
+            mode="gauge+number+delta",
+            value=0.83,
+            delta={'reference': 0.80, 'increasing': {'color': '#4ECDC4'}, 'font': {'size': 16}},
+            number={'font': {'size': 48, 'color': '#E8EDF2'}, 'valueformat': '.2f'},
+            gauge={
+                'axis': {'range': [0, 1], 'tickwidth': 1, 'tickcolor': '#4A6B80',
+                         'dtick': 0.2, 'tickfont': {'color': '#4A6B80', 'size': 10}},
+                'bar': {'color': '#4ECDC4', 'thickness': 0.3},
+                'bgcolor': 'rgba(0,0,0,0)',
+                'borderwidth': 0,
+                'steps': [
+                    {'range': [0, 0.75],  'color': 'rgba(232,64,64,0.12)'},
+                    {'range': [0.75, 0.79],'color': 'rgba(232,156,0,0.12)'},
+                    {'range': [0.79, 1.0], 'color': 'rgba(78,205,196,0.08)'},
+                ],
+                'threshold': {
+                    'line': {'color': '#E89C00', 'width': 3},
+                    'thickness': 0.8,
+                    'value': 0.80
+                }
+            },
+            title={'text': "DIR", 'font': {'size': 14, 'color': '#6B8FA8'}},
+        ))
+        fig_gauge.update_layout(
+            height=250, margin=dict(l=30, r=30, t=40, b=20),
+            paper_bgcolor='rgba(0,0,0,0)', font_color='#8AAFC4',
+        )
+        st.plotly_chart(fig_gauge, use_container_width=True)
+
+    with gauge_col2:
+        st.markdown(f"""
+        <div style="padding:1rem 0">
+            <div style="font-size:0.92rem;color:#E8EDF2;font-weight:600;margin-bottom:0.8rem">
+                Fairness Performance Summary</div>
+            <div style="font-size:0.82rem;color:#8AAFC4;line-height:1.7">
+                The Disparate Impact Ratio measures whether the ML model produces equitable credit decisions
+                across protected demographic groups (age, gender, region). A DIR of
+                <strong style="color:#4ECDC4">0.83</strong>
+                exceeds the <strong style="color:#E89C00">0.80</strong> regulatory and internal fairness threshold.<br><br>
+                <strong style="color:#E8EDF2">Zones:</strong><br>
+                <span style="color:#E84040">■</span> Below 0.75 — Alert: scoring paused, bias audit required<br>
+                <span style="color:#E89C00">■</span> 0.75–0.79 — Warning: root-cause analysis within 5 days<br>
+                <span style="color:#4ECDC4">■</span> Above 0.80 — Normal: on target<br><br>
+                <strong style="color:#E8EDF2">Pre-ML baseline:</strong> 0.78 (rule-based system).
+                The ML model improved fairness by +0.05.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # ---- KRI TABLE ----
+    st.markdown("""
+    <div style="font-size:0.68rem;font-weight:600;color:#4ECDC4;
+                letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem">
+        Key Risk Indicators — Status as of April 2026</div>
+    """, unsafe_allow_html=True)
+
+    kri_rows = [
+        {
+            "name": "Default Rate Delta", "detail": "30-day rolling window",
+            "current": "1.4 pp", "warn": "> 2.0 pp", "alert": "> 5.0 pp",
+            "escalation": "Halt scoring engine; CRO review within 24 hours",
+            "status": "Normal", "status_class": "chip-normal", "owner": "Credit Risk"
+        },
+        {
+            "name": "Open Finance Coverage", "detail": "BCB Open Finance API",
+            "current": "72%", "warn": "< 60%", "alert": "< 40%",
+            "escalation": "Pause pipeline; Data Engineering audit within 5 days",
+            "status": "Normal", "status_class": "chip-normal", "owner": "Data Engineering"
+        },
+        {
+            "name": "Regulatory Breach Flag", "detail": "BACEN compliance",
+            "current": "0 — clear", "warn": "—", "alert": "Flag = 1",
+            "escalation": "Immediate suspension; CCO + Legal within 1 hour",
+            "status": "Clear", "status_class": "chip-normal", "owner": "Legal"
+        },
+    ]
+
+    kri_html = """<div style="background:rgba(15,29,46,0.6);border:1px solid rgba(78,205,196,0.08);
+                             border-radius:10px;overflow:hidden">
+    <table class="kri-table">
+    <thead><tr>
+        <th style="width:20%">Risk Indicator</th>
+        <th style="width:10%">Current</th>
+        <th style="width:10%">Warning</th>
+        <th style="width:10%">Alert</th>
+        <th style="width:22%">Escalation Action</th>
+        <th style="width:10%">Status</th>
+        <th style="width:8%">Owner</th>
+    </tr></thead><tbody>"""
+
+    for kri in kri_rows:
+        kri_html += f"""<tr>
+            <td><strong style="color:#E8EDF2">{kri['name']}</strong><br>
+                <span style="font-size:0.7rem;color:#4A6B80">{kri['detail']}</span></td>
+            <td><span style="font-family:monospace;font-weight:600;color:#E8EDF2">{kri['current']}</span></td>
+            <td><span style="font-family:monospace;color:#4A6B80">{kri['warn']}</span></td>
+            <td><span style="font-family:monospace;color:#4A6B80">{kri['alert']}</span></td>
+            <td><span style="font-size:0.78rem;color:#8AAFC4">{kri['escalation']}</span></td>
+            <td><span class="status-chip {kri['status_class']}"><span class="chip-dot"></span>{kri['status']}</span></td>
+            <td><span style="font-size:0.78rem;color:#6B8FA8">{kri['owner']}</span></td>
+        </tr>"""
+
+    kri_html += "</tbody></table></div>"
+    st.markdown(kri_html, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # ---- TOP 5 RISK REGISTER ----
+    st.markdown("""
+    <div style="font-size:0.68rem;font-weight:600;color:#4ECDC4;
+                letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem">
+        Top Five Risk Register</div>
+    """, unsafe_allow_html=True)
+
+    risks_register = [
+        {
+            "name": "Algorithmic Bias & Fairness Drift",
+            "likelihood": "Medium", "impact": "High",
+            "li_color": "#E89C00", "im_color": "#E84040",
+            "early_warning": "DIR < 0.79 (monthly monitoring)",
+            "mitigation": "Pre/post fairness audit at Validate gate; SHAP logging at 94%; Open Finance reduces thin-file bias; recertification if PSI > 0.15",
+            "owner": "Model Validation Team / CRO",
+            "escalation": "DIR < 0.75 → scoring paused immediately, independent bias audit, CRO approval to resume"
+        },
+        {
+            "name": "Default Rate Escalation",
+            "likelihood": "Medium", "impact": "High",
+            "li_color": "#E89C00", "im_color": "#E84040",
+            "early_warning": "Default Rate Delta > 2.0 pp (30-day rolling)",
+            "mitigation": "Controlled pilot with 12-month go/no-go; segment-level monitoring; model retraining on drift detection",
+            "owner": "Credit Risk / CRO",
+            "escalation": "Delta > 5.0 pp → engine halted, CRO review within 24 hours"
+        },
+        {
+            "name": "Open Finance Data Coverage Failure",
+            "likelihood": "Medium", "impact": "Medium",
+            "li_color": "#E89C00", "im_color": "#E89C00",
+            "early_warning": "Coverage < 60% (monthly)",
+            "mitigation": "Dedicated Data Engineering team; API uptime monitoring; fallback to human review for thin-file applications",
+            "owner": "Data Engineering / CTO",
+            "escalation": "Coverage < 40% → pipeline paused for thin-file segments"
+        },
+        {
+            "name": "Regulatory Non-Compliance (BACEN)",
+            "likelihood": "Low", "impact": "Very High",
+            "li_color": "#4ECDC4", "im_color": "#E84040",
+            "early_warning": "BACEN regulatory flag (continuous monitoring)",
+            "mitigation": "Explainability at 94%; full audit trail at every gate; Legal monitors BACEN bulletins; annual external legal review",
+            "owner": "Legal / CCO",
+            "escalation": "Flag = 1 → immediate suspension, CCO + Legal within 1 hour, no resumption without BACEN clearance"
+        },
+        {
+            "name": "Organisational Resistance",
+            "likelihood": "High", "impact": "Medium",
+            "li_color": "#E84040", "im_color": "#E89C00",
+            "early_warning": "Pilot Approval Rate < 70% (rolling 90-day)",
+            "mitigation": "Change management programme with regional credit leads; SHAP explanations for credit officers; phased rollout; monthly feedback sessions",
+            "owner": "Compliance & Risk / Executive Credit Committee",
+            "escalation": "Approval < 55% → pilot suspended, full governance review before restart"
+        },
+    ]
+
+    for i, risk in enumerate(risks_register):
+        with st.expander(f"Risk {i+1}: {risk['name']}", expanded=(i == 0)):
+            r_col1, r_col2 = st.columns(2)
+            with r_col1:
+                st.markdown(f"""
+                <div style="font-size:0.82rem;color:#8AAFC4;line-height:1.8">
+                    <strong style="color:#E8EDF2">Likelihood:</strong>
+                    <span style="color:{risk['li_color']}">{risk['likelihood']}</span> &nbsp;·&nbsp;
+                    <strong style="color:#E8EDF2">Impact:</strong>
+                    <span style="color:{risk['im_color']}">{risk['impact']}</span><br>
+                    <strong style="color:#E8EDF2">Early warning:</strong> {risk['early_warning']}<br>
+                    <strong style="color:#E8EDF2">Owner:</strong> {risk['owner']}
+                </div>
+                """, unsafe_allow_html=True)
+            with r_col2:
+                st.markdown(f"""
+                <div style="font-size:0.82rem;color:#8AAFC4;line-height:1.8">
+                    <strong style="color:#E8EDF2">Mitigation:</strong> {risk['mitigation']}<br>
+                    <strong style="color:#E84040">Escalation:</strong> {risk['escalation']}
+                </div>
+                """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # ---- SUSTAINABILITY ----
+    st.markdown("""
+    <div style="font-size:0.68rem;font-weight:600;color:#4ECDC4;
+                letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem">
+        Sustainability Impact Assessment</div>
+    """, unsafe_allow_html=True)
+
+    sust_cols = st.columns(3)
+    sustainability = [
+        {
+            "icon": "🌍", "title": "Environmental",
+            "impact": "ML training and daily inference consume GPU compute (est. 50–120 kWh per retraining cycle), scaling with applicant volume.",
+            "mitigation": "Itaú's São Paulo data centres run on 78% renewable energy. Incremental retraining (not full retrain) when PSI < 0.15 reduces unnecessary compute.",
+            "color": "#2DD4A0"
+        },
+        {
+            "icon": "👥", "title": "Social",
+            "impact": "Automated credit decisions affect millions of retail customers, including young and underbanked populations historically excluded by rule-based systems.",
+            "mitigation": "DIR monitored monthly (current: 0.83). Open Finance data addresses thin-file bias. SHAP ensures every decision is explainable to the customer on request.",
+            "color": "#4ECDC4"
+        },
+        {
+            "icon": "🏛️", "title": "Governance",
+            "impact": "Operating under BCB Resolution 4,557 — must maintain full audit trails, named accountability, and regulatory compliance at all times.",
+            "mitigation": "Hybrid governance with board oversight. Six-gate compliance workflow. Trigger-based recertification (PSI > 0.15 or annual). CCO approves threshold transitions.",
+            "color": "#E89C00"
+        },
+    ]
+
+    for col, sust in zip(sust_cols, sustainability):
+        with col:
+            st.markdown(f"""
+            <div class="sust-card" style="border-top:3px solid {sust['color']}">
+                <div class="sust-icon">{sust['icon']}</div>
+                <div class="sust-title">{sust['title']}</div>
+                <div class="sust-text"><strong style="color:#E8EDF2">Impact:</strong> {sust['impact']}</div>
+                <div class="sust-text" style="margin-top:0.5rem"><strong style="color:{sust['color']}">Mitigation:</strong> {sust['mitigation']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("")
+
+    st.markdown(f"""
+    <div style="background:rgba(15,29,46,0.6);border:1px solid {PALETTE['border']};border-radius:10px;
+                padding:1rem 1.4rem;margin:0.5rem 0">
+        <strong style="color:#E89C00;font-size:0.88rem">⚖️ Trade-off: Speed vs. Fairness</strong>
+        <p style="color:#8AAFC4;font-size:0.82rem;margin:0.5rem 0 0 0;line-height:1.6">
+        The governance challenge: BCB requires formal audit cycles at every gate (quarters), but the model
+        needs to retrain as customer behaviour shifts, and fintechs update in weeks. Resolution: tiered approval
+        pathway — expedited two-gate review (Validate → Monitor) for minor recalibrations within predefined
+        parameter boundaries; full six-gate cycle for structural changes to features or decision logic.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # ---- BOARD NARRATIVE ----
+    st.markdown("""
+    <div style="font-size:0.68rem;font-weight:600;color:#4ECDC4;
+                letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem">
+        Board Narrative — AI Credit Scoring Engine v3 · Q2 2026</div>
+    """, unsafe_allow_html=True)
+
+    narr_col1, narr_col2 = st.columns(2)
+    with narr_col1:
+        st.markdown(f"""
+        <div style="font-size:0.85rem;color:#C8DCE8;line-height:1.7">
+            <strong style="color:#E8EDF2;font-size:0.92rem">Performance Summary</strong><br>
+            Over the past 12 months, Itaú completed four of six governance gates — Intake, Triage, Build,
+            and Validate. The model achieved a DIR of 0.83, exceeding the 0.80 fairness threshold.
+            Explainability coverage reached 94% (target 90%) and pilot approval stands at 88%,
+            three percentage points above the minimum. All risk indicators remain within normal ranges.
+        </div>
+        """, unsafe_allow_html=True)
+    with narr_col2:
+        st.markdown(f"""
+        <div style="font-size:0.85rem;color:#C8DCE8;line-height:1.7">
+            <strong style="color:#E8EDF2;font-size:0.92rem">Why It Happened</strong><br>
+            Consistent improvement reflects deliberate governance design: mandatory fairness audits
+            at the Validate gate, SHAP-based explainability logging embedded in the scoring pipeline,
+            and structured pilot review cycles managed by the Compliance and Risk function.
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div class="rec-box">
+        <strong style="color:#EC7000;font-size:0.92rem">📋 Recommended Action</strong>
+        <p style="color:#C8DCE8;font-size:0.85rem;margin:0.5rem 0 0 0;line-height:1.6">
+        The board is asked to approve progression to full deployment in Q3 2026. The Deploy gate
+        is currently active with UAT in progress. A 30-day production monitoring window at the
+        Monitor gate will follow prior to full rollout. The CRO retains authority to halt deployment
+        at any point if Alert thresholds are breached.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div style="background:rgba(15,29,46,0.6);border:1px solid {PALETTE['border']};border-radius:10px;
+                padding:1rem 1.4rem;margin:0.5rem 0">
+        <strong style="color:#E84040;font-size:0.88rem">🛡️ Risks and Controls</strong>
+        <p style="color:#8AAFC4;font-size:0.82rem;margin:0.5rem 0 0 0;line-height:1.6">
+        Three residual risks are monitored continuously. Default Rate Delta > 5 pp → immediate scoring
+        suspension and CRO review. Open Finance coverage < 40% → pipeline pause.
+        BACEN regulatory flag → immediate system suspension with CCO and Legal escalation.
+        Recertification is mandatory if PSI exceeds 0.15 or annually, whichever comes first.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # ---- BOARD CHALLENGE Q&A ----
+    st.markdown("""
+    <div style="font-size:0.68rem;font-weight:600;color:#4ECDC4;
+                letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem">
+        Board Challenge Questions</div>
+    """, unsafe_allow_html=True)
+
+    board_qas = [
+        {
+            "q": "What is the biggest ethical risk of this system?",
+            "short": "The model inherits and scales historical biases, systematically disadvantaging young, low-income, or regionally underserved applicants.",
+            "evidence": "Pre-ML DIR was 0.78 (below threshold). ML model scores 0.83, but this depends on Open Finance enrichment. Without it, thin-file applicants receive less accurate scores.",
+            "action": "Monthly DIR monitoring (Warning < 0.79, Alert < 0.75). Pre/post fairness audit at every Validate gate. Alert triggers scoring pause and independent bias audit."
+        },
+        {
+            "q": "Who is accountable if the model produces a harmful output?",
+            "short": "CRO for credit risk outcomes. CCO for regulatory and fairness compliance. Executive Credit Committee for overall strategic accountability.",
+            "evidence": "Hybrid governance model with named owners at every metric. Every escalation action specifies who acts and within what time boundary.",
+            "action": "Quarterly review by Executive Credit Committee confirms accountability lines remain current."
+        },
+        {
+            "q": "Under what conditions would you pause or roll back deployment?",
+            "short": "Three conditions: Default Rate Delta > 5.0 pp, Open Finance coverage < 40%, or BACEN regulatory flag. PSI > 0.15 triggers mandatory recertification.",
+            "evidence": "Current readings: Delta 1.4 pp (safe), Coverage 72% (safe), BACEN flag 0 (clear). All within thresholds.",
+            "action": "Any Alert breach halts the engine immediately. Relevant owner notified within 1–24 hours. No resumption without written approval."
+        },
+        {
+            "q": "What value will we see in the first 30–60 days?",
+            "short": "Initial default rate vs. baseline, live DIR readings at scale, first real-world explainability audit, and early credit approval rate recovery signals.",
+            "evidence": "Pilot: DIR 0.83, Explainability 94%, Pilot Approval 88%. The 30-day monitoring window confirms these hold under full volume.",
+            "action": "Monthly board report at day 30 and 60. Delta > 2.0 pp during monitoring triggers CRO notification and segment investigation within 10 days."
+        },
+        {
+            "q": "Why is now the right time?",
+            "short": "Fintechs hold 19.1% of credit market, projected to reach 30% by 2028–2029. Every quarter of delay widens the gap.",
+            "evidence": "Open Finance mandate active since 2021 provides data infrastructure. RF model AUC 0.923 demonstrates technical readiness. Four of six gates complete. Waiting adds cost but not capability.",
+            "action": "Approve Q3 2026 deployment. Monitor gate provides final safety checkpoint. Delay to Q4 allows fintech share to grow further."
+        },
+    ]
+
+    for qa in board_qas:
+        with st.expander(f"❓ {qa['q']}", expanded=False):
+            st.markdown(f"""
+            <div style="font-size:0.85rem;line-height:1.7">
+                <strong style="color:#4ECDC4">Short answer:</strong>
+                <span style="color:#C8DCE8">{qa['short']}</span><br><br>
+                <strong style="color:#4ECDC4">Evidence:</strong>
+                <span style="color:#8AAFC4">{qa['evidence']}</span><br><br>
+                <strong style="color:#4ECDC4">Next action:</strong>
+                <span style="color:#8AAFC4">{qa['action']}</span>
+            </div>
+            """, unsafe_allow_html=True)
+
+    # ---- LEGEND + FOOTER ----
+    st.markdown(f"""
+    <div class="legend-row">
+        <div class="legend-item"><div class="legend-dot" style="background:#2DD4A0"></div>Normal / On Target</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E89C00"></div>Warning</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E84040"></div>Alert — Action Required</div>
+    </div>
+    <div style="text-align:center;font-size:0.68rem;color:#3A5568;margin-top:0.5rem">
+        Illustrative data · BM4041 Week 4–6 · UCLan MSc Business Analytics &amp; AI · Vinicius Rossetti · 2026
+    </div>
+    """, unsafe_allow_html=True)
 
 # =============================================================
 # FOOTER
