@@ -113,7 +113,7 @@ st.markdown(f"""
 
     /* Metric cards */
     .live-card {{
-        background: linear-gradient(135deg, #0D1F2D, #1B2E3E);
+        background: linear-gradient(135deg, #060D16, #0F1D2E);
         border: 1px solid {PALETTE['accent']};
         border-radius: 10px;
         padding: 0.9rem 1rem;
@@ -126,7 +126,7 @@ st.markdown(f"""
 
     /* Crisis banner */
     .crisis-box {{
-        background: linear-gradient(135deg, #1B2E3E, #0D1F2D);
+        background: linear-gradient(135deg, #0F1D2E, #060D16);
         border: 2px solid {PALETTE['trad']};
         border-radius: 12px;
         padding: 1.5rem 2rem;
@@ -576,7 +576,7 @@ else:
 
 risk_threshold = st.sidebar.slider(THRESHOLD_LBL, 10, 40, 25)
 st.sidebar.markdown(f"""
-<div style="background:rgba(27,79,114,0.2);border-radius:6px;padding:0.6rem 0.8rem;
+<div style="background:rgba(15,29,46,0.5);border-radius:6px;padding:0.6rem 0.8rem;
             font-size:0.74rem;color:#D5E8F5;border-left:3px solid {PALETTE['warning']}">
 <strong style="color:{PALETTE['warning']}">What is the Approval Threshold?</strong><br>
 The maximum default probability a fintech accepts to approve a loan.<br><br>
@@ -618,7 +618,7 @@ now = get_now_brt()
 st.markdown(f"""
 <h1 style="margin-bottom:0.1rem;white-space:normal;line-height:1.3">{TITLE}</h1>
 <p style="color:{PALETTE['muted']};font-size:1rem;margin-top:0">{SUBTITLE}</p>
-<div style="display:inline-block;background:rgba(27,79,114,0.35);border:1px solid {PALETTE['accent']};
+<div style="display:inline-block;background:rgba(15,29,46,0.7);border:1px solid {PALETTE['accent']};
             border-radius:6px;padding:0.25rem 0.8rem;margin-top:0.2rem">
     <span style="color:{PALETTE['fintech']};font-size:0.88rem;font-weight:600">
     🕐 {LAST_UPDATE}: {now.strftime('%d %b %Y · %H:%M:%S')} (BRT)
@@ -786,34 +786,34 @@ with tab1:
             text=f"Banks: {tr_vals[idx]:.0f}M",
             showarrow=True, arrowhead=2, ax=cfg['tr']['ax'], ay=cfg['tr']['ay'],
             font=dict(color=PALETTE['trad'], size=13), arrowcolor=PALETTE['trad'],
-            bgcolor="rgba(13,31,45,0.92)", bordercolor=PALETTE['trad'], borderwidth=1.5)
+            bgcolor="rgba(4,9,16,0.95)", bordercolor=PALETTE['trad'], borderwidth=1.5)
         fig_rise.add_annotation(x=d, y=ft_vals[idx],
             text=f"Other FTs: {ft_vals[idx]:.0f}M",
             showarrow=True, arrowhead=2, ax=cfg['ft']['ax'], ay=cfg['ft']['ay'],
             font=dict(color=PALETTE['fintech'], size=12), arrowcolor=PALETTE['fintech'],
-            bgcolor="rgba(13,31,45,0.92)", bordercolor=PALETTE['fintech'], borderwidth=1.5)
+            bgcolor="rgba(4,9,16,0.95)", bordercolor=PALETTE['fintech'], borderwidth=1.5)
         fig_rise.add_annotation(x=d, y=nubank_vals[idx],
             text=f"Nubank: {nubank_vals[idx]:.0f}M",
             showarrow=True, arrowhead=2, ax=cfg['nu']['ax'], ay=cfg['nu']['ay'],
             font=dict(color='#9B59B6', size=15), arrowcolor='#9B59B6',
-            bgcolor="rgba(13,31,45,0.92)", bordercolor='#9B59B6', borderwidth=1.5)
+            bgcolor="rgba(4,9,16,0.95)", bordercolor='#9B59B6', borderwidth=1.5)
 
     # End-of-line labels on the right side
     fig_rise.add_annotation(x=DATES[-1], y=tr_vals[-1],
         text=f"Banks: {tr_vals[-1]:.0f}M",
         showarrow=False, xanchor='left', xshift=10,
         font=dict(color=PALETTE['trad'], size=13),
-        bgcolor="rgba(13,31,45,0.92)", bordercolor=PALETTE['trad'], borderwidth=1.5)
+        bgcolor="rgba(4,9,16,0.95)", bordercolor=PALETTE['trad'], borderwidth=1.5)
     fig_rise.add_annotation(x=DATES[-1], y=ft_vals[-1]-36,
         text=f"Other FTs: {ft_vals[-1]:.0f}M",
         showarrow=False, xanchor='left', xshift=10,
         font=dict(color=PALETTE['fintech'], size=12),
-        bgcolor="rgba(13,31,45,0.92)", bordercolor=PALETTE['fintech'], borderwidth=1.5)
+        bgcolor="rgba(4,9,16,0.95)", bordercolor=PALETTE['fintech'], borderwidth=1.5)
     fig_rise.add_annotation(x=DATES[-1], y=nubank_vals[-1],
         text=f"Nubank: {nubank_vals[-1]:.0f}M",
         showarrow=False, xanchor='left', xshift=10,
         font=dict(color='#9B59B6', size=15),
-        bgcolor="rgba(13,31,45,0.92)", bordercolor='#9B59B6', borderwidth=1.5)
+        bgcolor="rgba(4,9,16,0.95)", bordercolor='#9B59B6', borderwidth=1.5)
 
     fig_rise.add_vrect(x0="2020-01-01", x1="2021-07-01",
         fillcolor="rgba(243,156,18,0.08)", line_width=0,
@@ -868,16 +868,16 @@ with tab1:
         annotation_font_color=PALETTE['warning'], annotation_font_size=10)
     fig_pay2.add_annotation(x=2025, y=52, text="<b>PIX 52%</b>", showarrow=True,
         arrowhead=2, ax=35, ay=-30, font=dict(color=PALETTE['fintech'], size=11),
-        arrowcolor=PALETTE['fintech'], bgcolor="rgba(13,31,45,0.85)", bordercolor=PALETTE['fintech'])
+        arrowcolor=PALETTE['fintech'], bgcolor="rgba(4,9,16,0.92)", bordercolor=PALETTE['fintech'])
     fig_pay2.add_annotation(x=2025, y=10, text="<b>Cash 10%</b>", showarrow=True,
         arrowhead=2, ax=35, ay=30, font=dict(color=PALETTE['trad'], size=11),
-        arrowcolor=PALETTE['trad'], bgcolor="rgba(13,31,45,0.85)", bordercolor=PALETTE['trad'])
+        arrowcolor=PALETTE['trad'], bgcolor="rgba(4,9,16,0.92)", bordercolor=PALETTE['trad'])
     fig_pay2.add_annotation(x=2025, y=28, text="<b>Cards 28%</b>", showarrow=True,
         arrowhead=2, ax=35, ay=-15, font=dict(color=PALETTE['warning'], size=11),
-        arrowcolor=PALETTE['warning'], bgcolor="rgba(13,31,45,0.85)", bordercolor=PALETTE['warning'])
+        arrowcolor=PALETTE['warning'], bgcolor="rgba(4,9,16,0.92)", bordercolor=PALETTE['warning'])
     fig_pay2.add_annotation(x=2025, y=10, text="<b>Bank Transfer 10%</b>", showarrow=True,
         arrowhead=2, ax=80, ay=55, font=dict(color=PALETTE['accent'], size=11),
-        arrowcolor=PALETTE['accent'], bgcolor="rgba(13,31,45,0.85)", bordercolor=PALETTE['accent'])
+        arrowcolor=PALETTE['accent'], bgcolor="rgba(4,9,16,0.92)", bordercolor=PALETTE['accent'])
     fig_pay2.update_layout(
         title='<b>Preferred Payment Methods in Brazil (%)</b><br><sub>PIX displaced cash and cards in just 4 years — the infrastructure fintechs rode to dominance</sub>',
         plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
@@ -940,7 +940,7 @@ with tab1:
         showarrow=False,
         font=dict(color=PALETTE['fintech'], size=10),
         xanchor="left", yanchor="top",
-        bgcolor="rgba(13,31,45,0.7)"
+        bgcolor="rgba(4,9,16,0.85)"
     )
 
     # Callout at latest fintech point + % gain annotation
@@ -957,7 +957,7 @@ with tab1:
         showarrow=True, arrowhead=2,
         font=dict(color=PALETTE['fintech'], size=12),
         arrowcolor=PALETTE['fintech'],
-        bgcolor="rgba(13,31,45,0.85)",
+        bgcolor="rgba(4,9,16,0.92)",
         bordercolor=PALETTE['fintech'],
         yref='y1'
     )
@@ -967,7 +967,7 @@ with tab1:
         showarrow=True, arrowhead=2, ax=40, ay=-30,
         font=dict(color=PALETTE['trad'], size=12),
         arrowcolor=PALETTE['trad'],
-        bgcolor="rgba(13,31,45,0.85)",
+        bgcolor="rgba(4,9,16,0.92)",
         bordercolor=PALETTE['trad'],
         yref='y2'
     )
@@ -1178,7 +1178,7 @@ with tab4:
 
     with col1:
         st.markdown(f"""
-        <div style="background:rgba(27,79,114,0.18);border-radius:8px;padding:0.6rem 0.9rem;
+        <div style="background:rgba(15,29,46,0.45);border-radius:8px;padding:0.6rem 0.9rem;
                     border-top:3px solid {PALETTE['accent']};margin-bottom:0.5rem">
         <strong style="color:{PALETTE['accent']}">👤 Personal Profile</strong>
         </div>""", unsafe_allow_html=True)
@@ -1192,7 +1192,7 @@ with tab4:
 
     with col2:
         st.markdown(f"""
-        <div style="background:rgba(27,79,114,0.18);border-radius:8px;padding:0.6rem 0.9rem;
+        <div style="background:rgba(15,29,46,0.45);border-radius:8px;padding:0.6rem 0.9rem;
                     border-top:3px solid {PALETTE['warning']};margin-bottom:0.5rem">
         <strong style="color:{PALETTE['warning']}">💳 Loan Request</strong>
         </div>""", unsafe_allow_html=True)
@@ -1210,7 +1210,7 @@ with tab4:
 
     with col3:
         st.markdown(f"""
-        <div style="background:rgba(27,79,114,0.18);border-radius:8px;padding:0.6rem 0.9rem;
+        <div style="background:rgba(15,29,46,0.45);border-radius:8px;padding:0.6rem 0.9rem;
                     border-top:3px solid {'#9B59B6'};margin-bottom:0.5rem">
         <strong style="color:#9B59B6">📋 Credit History</strong>
         </div>""", unsafe_allow_html=True)
@@ -1471,7 +1471,7 @@ with tab4:
 
     # Monthly breakdown
     st.markdown(f"""
-    <div style="background:rgba(27,79,114,0.12);border-radius:8px;padding:0.7rem 1.2rem;
+    <div style="background:rgba(15,29,46,0.35);border-radius:8px;padding:0.7rem 1.2rem;
                 font-size:0.82rem;color:#A8C0D6;margin-bottom:0.5rem">
     💰 <strong>Loan Economics:</strong> &nbsp;
     Monthly instalment: <strong style="color:{PALETTE['highlight']}">€{burden:.0f}</strong> &nbsp;|&nbsp;
@@ -1601,14 +1601,14 @@ with tab3:
             text="<b>Traditional banks avg 4.11%</b>",
             showarrow=False, xanchor="left", yanchor="bottom",
             font=dict(color=PALETTE['trad'], size=13, family="Arial Black"),
-            bgcolor="rgba(13,31,45,0.75)", borderpad=3
+            bgcolor="rgba(4,9,16,0.88)", borderpad=3
         )
         fig_br_def.add_annotation(
             x=0.99, xref="paper", y=3.24, yref="y",
             text="<b>Fintech avg 3.24%</b>",
             showarrow=False, xanchor="right", yanchor="top",
             font=dict(color=PALETTE['fintech'], size=13, family="Arial Black"),
-            bgcolor="rgba(13,31,45,0.75)", borderpad=3
+            bgcolor="rgba(4,9,16,0.88)", borderpad=3
         )
         fig_br_def.update_layout(
             title='<b>Default Rate by Segment (%)</b><br><sub>BCB IFData 2024 · Non-Repayment Rate</sub>',
@@ -1743,7 +1743,7 @@ with tab5:
         text="<b>19.1%</b><br>Q4 2025 Real", showarrow=True,
         font=dict(color=PALETTE['fintech'], size=12),
         arrowcolor=PALETTE['fintech'], arrowhead=2,
-        bgcolor="rgba(13,31,45,0.8)", bordercolor=PALETTE['fintech'])
+        bgcolor="rgba(4,9,16,0.9)", bordercolor=PALETTE['fintech'])
     fig_fc.update_layout(
         title='<b>Fintech Market Share — Historical + Prophet Forecast</b><br>'
               '<sub>Teal = real data · Orange dashed = forecast · Red line = 30% tipping point</sub>',
@@ -1987,7 +1987,7 @@ McKinsey Global Banking Annual Review 2024 · Facebook Prophet documentation (Ta
 
         with col:
             st.markdown(f"""
-            <div style="background:rgba(27,79,114,0.18);border-radius:10px;padding:1rem 1.1rem;
+            <div style="background:rgba(15,29,46,0.45);border-radius:10px;padding:1rem 1.1rem;
                         border-top:3px solid {PALETTE['fintech']};margin-bottom:0.5rem">
               <div style="color:{PALETTE['muted']};font-size:0.78rem;font-weight:600;
                           text-transform:uppercase;letter-spacing:0.05em">📉 Fintech Share {yr}</div>
@@ -1996,7 +1996,7 @@ McKinsey Global Banking Annual Review 2024 · Facebook Prophet documentation (Ta
               <div style="font-size:0.82rem;color:{'#27AE60' if gap_ok else PALETTE['trad']}">
                 {gap_str}</div>
             </div>
-            <div style="background:rgba(27,79,114,0.12);border-radius:10px;padding:1rem 1.1rem;
+            <div style="background:rgba(15,29,46,0.35);border-radius:10px;padding:1rem 1.1rem;
                         border-top:3px solid {PALETTE['warning']}">
               <div style="color:{PALETTE['muted']};font-size:0.78rem;font-weight:600;
                           text-transform:uppercase;letter-spacing:0.05em">🏦 Traditional Bank {yr}</div>
@@ -2023,7 +2023,7 @@ McKinsey Global Banking Annual Review 2024 · Facebook Prophet documentation (Ta
 
     # Executive recommendation box
     st.markdown(f"""
-    <div style="background:rgba(27,79,114,0.2);border-radius:8px;padding:0.9rem;
+    <div style="background:rgba(15,29,46,0.5);border-radius:8px;padding:0.9rem;
                 border-left:4px solid {PALETTE['accent']};margin-top:0.8rem;font-size:0.82rem;color:#D5E8F5">
     <strong style="color:{PALETTE['accent']}">📋 Board Recommendation</strong><br><br>
     Investing <strong>€{ai_invest_m}M/yr</strong> in AI, reducing onboarding to
@@ -2042,7 +2042,7 @@ McKinsey Global Banking Annual Review 2024 · Facebook Prophet documentation (Ta
     # ── Section 3: Dynamic Playbook — linked to sliders ──────
     st.markdown("## 🎯 Part 3 — Comeback Playbook")
     st.markdown(f"""
-    <div style="background:rgba(27,79,114,0.15);border-radius:8px;padding:0.7rem 1.1rem;
+    <div style="background:rgba(15,29,46,0.4);border-radius:8px;padding:0.7rem 1.1rem;
                 border-left:4px solid {PALETTE['accent']};font-size:0.85rem;color:#D5E8F5;margin-bottom:1rem">
     The playbook below <strong>reacts to your scenario builder settings above</strong>.
     Items marked 🟢 are addressed by your current configuration.
@@ -2174,7 +2174,7 @@ McKinsey Global Banking Annual Review 2024 · Facebook Prophet documentation (Ta
         ok = init['active']
         badge_class = 'badge-high' if init['urgency'] == 'URGENT' else 'badge-medium' if init['urgency'] == 'HIGH' else 'badge-low'
         border_color = init['color'] if ok else 'rgba(100,100,100,0.4)'
-        bg_color = f"rgba(39,174,96,0.06)" if ok else "rgba(27,79,114,0.08)"
+        bg_color = f"rgba(39,174,96,0.06)" if ok else "rgba(15,29,46,0.25)"
         st.markdown(f"""
         <div style="background:{bg_color};border-radius:10px;
                     padding:1rem 1.2rem;margin:0.6rem 0;border-left:4px solid {border_color}">
@@ -2211,7 +2211,7 @@ McKinsey Global Banking Annual Review 2024 · Facebook Prophet documentation (Ta
     n_total  = len(initiatives)
     score_color = PALETTE['fintech'] if n_active >= 4 else PALETTE['warning'] if n_active >= 2 else PALETTE['trad']
     st.markdown(f"""
-    <div style="background:rgba(27,79,114,0.2);border-radius:10px;padding:1rem 1.4rem;
+    <div style="background:rgba(15,29,46,0.5);border-radius:10px;padding:1rem 1.4rem;
                 margin-top:1rem;border:1px solid {score_color};display:flex;
                 justify-content:space-between;align-items:center">
         <div>
@@ -2349,7 +2349,7 @@ with tab2:
     with col1:
         # Cost advantage
         st.markdown(f"""
-        <div style="background:rgba(27,79,114,0.2);border-radius:10px;padding:1.2rem;
+        <div style="background:rgba(15,29,46,0.5);border-radius:10px;padding:1.2rem;
                     border-top:3px solid {PALETTE['fintech']};margin-bottom:1rem">
             <h4 style="color:{PALETTE['fintech']};margin:0 0 0.5rem 0">💰 1. Customer Acquisition Cost</h4>
             <p style="color:#D5E8F5;font-size:0.92rem;margin:0">
@@ -2365,7 +2365,7 @@ with tab2:
 
         # IMF competition effect
         st.markdown(f"""
-        <div style="background:rgba(27,79,114,0.2);border-radius:10px;padding:1.2rem;
+        <div style="background:rgba(15,29,46,0.5);border-radius:10px;padding:1.2rem;
                     border-top:3px solid {PALETTE['warning']};margin-bottom:1rem">
             <h4 style="color:{PALETTE['warning']};margin:0 0 0.5rem 0">📉 2. Rate Compression (IMF 2026)</h4>
             <p style="color:#D5E8F5;font-size:0.92rem;margin:0">
@@ -2382,7 +2382,7 @@ with tab2:
 
         # PIX effect
         st.markdown(f"""
-        <div style="background:rgba(27,79,114,0.2);border-radius:10px;padding:1.2rem;
+        <div style="background:rgba(15,29,46,0.5);border-radius:10px;padding:1.2rem;
                     border-top:3px solid {PALETTE['accent']};margin-bottom:1rem">
             <h4 style="color:{PALETTE['accent']};margin:0 0 0.5rem 0">📱 3. PIX as Disruption Catalyst</h4>
             <p style="color:#D5E8F5;font-size:0.92rem;margin:0">
@@ -2455,7 +2455,7 @@ with tab2:
     ]
     for col, (bank, time, note, color) in zip(cols, onboarding):
         col.markdown(f"""
-        <div style="background:rgba(27,79,114,0.15);border-radius:8px;
+        <div style="background:rgba(15,29,46,0.4);border-radius:8px;
                     padding:0.9rem;text-align:center;border-top:3px solid {color}">
             <div style="font-size:0.75rem;color:{PALETTE['muted']}">{bank}</div>
             <div style="font-size:1.4rem;font-weight:800;color:{color}">{time}</div>
@@ -2485,7 +2485,7 @@ with tab2:
             showarrow=True, arrowhead=1,
             font=dict(color=PALETTE['highlight'], size=10),
             arrowcolor=PALETTE['highlight'],
-            bgcolor="rgba(13,31,45,0.85)",
+            bgcolor="rgba(4,9,16,0.92)",
             bordercolor=PALETTE['highlight']
         )
     fig_nu.update_layout(
@@ -2551,7 +2551,7 @@ with tab6:
 
         st.markdown("### 📈 Default Rate by Grade")
         st.markdown(f"""
-        <div style="background:rgba(27,79,114,0.2);border-radius:8px;padding:0.8rem 1rem;
+        <div style="background:rgba(15,29,46,0.5);border-radius:8px;padding:0.8rem 1rem;
                     border-left:3px solid {PALETTE['accent']};font-size:0.82rem;color:#D5E8F5;margin-bottom:0.5rem">
         📖 <strong>What is Default Rate?</strong> (also called: <em>Non-Performing Loan Rate · Loan Non-Repayment Rate · Credit Loss Rate</em>)<br><br>
         The <strong>default rate</strong> is the percentage of borrowers who <strong>fail to repay their loan</strong>
@@ -2728,7 +2728,7 @@ with tab8:
             f"Brazil benchmark · BCB Live"
         )
         st.markdown(f"""
-        <div style="background:rgba(27,79,114,0.2);border-radius:6px;
+        <div style="background:rgba(15,29,46,0.5);border-radius:6px;
                     padding:0.6rem;font-size:0.78rem;color:#D5E8F5;margin:0.3rem 0">
         {SELIC_EXPLAIN}
         </div>
